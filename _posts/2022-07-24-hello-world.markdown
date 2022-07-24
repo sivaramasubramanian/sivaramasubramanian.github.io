@@ -14,7 +14,7 @@ So if you want to read something more interesting checkout my [latest blogs](/) 
 
 Let's check if code snippets are working properly.
 
-I am a [Gopher](https://go.dev/blog/gopher), I fell in love with [Golang](https://go.dev/) at my first job where we used to it build micro-services, I will be rooting for `Go` wherever I go, so lets start with that...
+I am a [Gopher](https://go.dev/blog/gopher), I fell in love with [Golang](https://go.dev/) at my first job where we used it to build micro-services, I will be rooting for `Go` wherever I go, so lets start with that...
 
 {% highlight golang %}
 func main(){
@@ -36,7 +36,9 @@ class Hello{
 // prints 'Hello World!!' to STDOUT.
 {% endhighlight %}
 
-The core purpose of all software applications is to Create, Read, and Modify data in some form or another. It all just boils down to this. Modern Databases systems do a tremendous job of making these operations efficient. Especially the [1.3M LOC behemoth](https://www.reddit.com/r/PostgreSQL/comments/jhe661/why_postgresql_has_13m_line_of_code/) called PostgreSQL, which is super-extensible and allows to add [hooks](https://arctype.com/blog/postgresql-hooks/), extensions and even control [how and where the data is stored](https://wiki.postgresql.org/wiki/Foreign_data_wrappers). 
+The core purpose of all software applications is to Create, Read, and Modify data in some form or another. It all just boils down to this. 
+
+Modern Databases systems do a tremendous job of making these operations efficient. Especially the [1.3M LOC behemoth](https://www.reddit.com/r/PostgreSQL/comments/jhe661/why_postgresql_has_13m_line_of_code/) called PostgreSQL, which is super-extensible and allows to add [hooks](https://arctype.com/blog/postgresql-hooks/), extensions and even control [how and where the data is stored](https://wiki.postgresql.org/wiki/Foreign_data_wrappers). 
 As such I have been writing and analyzing SQL queries quite a bit so lets test that too.
 
 {% highlight sql %}

@@ -30,6 +30,7 @@ layout: default
     {{ content }}
   </div>
   <div class="post-tags">
+    Tags: 
     {% if post %}
       {% assign tags = post.tags %}
     {% else %}
@@ -40,6 +41,9 @@ layout: default
     {% unless forloop.last %}&nbsp;{% endunless %}
     {% endfor %}
   </div>
+
+  {%- include share-page.html -%}
+
 
   {%- if site.disqus.shortname -%}
     {%- include disqus_comments.html -%}

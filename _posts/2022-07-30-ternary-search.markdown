@@ -3,22 +3,23 @@ layout: post
 title:  "Why don't we use Ternary Search?"
 date:   2022-07-30 11:05:01 +0530
 description: Is Ternary search better than binary search? Why is it not popularly used?
-categories: why-dont-we searching
+tags: why-dont-we searching
+excerpt_separator: <!--more-->
 ---
 
 Before answering the question in the title, let's see a bit about Binary Search.
 
 Binary Search is one of the most basic algorithms that every programmer learns. The gist of it is simple.
-
+<!--more-->
 To Search for an element in a sorted array, compare the search key with the middle element.
 * If both are the same, we have found the element.
 * Else if the key is lesser that the middle element, Repeat the search in left subarray.
 * Else repeat the search in right subarray.
 * if there is no such subarray to search then the element does not exist in this array.
 
-{:refdef: style="text-align: center;"}
-!["Visualization of Binary search"](/assets/binary-search-gif.webp "binary search in action")
-{: refdef}
+<!-- {:refdef: style="text-align: center;"} -->
+!["Visualization of Binary search"](/assets/binary-search-gif.webp "binary search in action"){:.centered}
+<!-- {: refdef} -->
 
 ### Why is Binary search efficient?
 The algorithm is simple and with each comparison we are cutting the search space in half.

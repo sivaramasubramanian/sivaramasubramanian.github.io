@@ -60,4 +60,4 @@ As we can see from the table, Binary Search (Split 2) is better than Ternary Sea
 ## Why is binary search special?
 Because we and our computers are special and can compare only 2 elements at a time, if we could somehow compare three elements in a single operation, then ternary would be optimal.
 
-[Ternary Search](https://en.wikipedia.org/wiki/Ternary_search) is not without its uses, a variation of the three-split search can used for finding the max or min element in an array if the array has a single highest or lowest element.
+[Ternary Search](https://en.wikipedia.org/wiki/Ternary_search) is not without its uses, a variation of the three-split search can be used for finding the max or min element in an array if the array has a single highest or lowest element.

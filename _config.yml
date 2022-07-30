@@ -87,3 +87,12 @@ google_analytics: G-4P2CXDSEJN
 # Disqus Comments
 disqus:
   shortname: sivaram-blog
+
+permalink: /:year/:month/:day/:title:output_ext
+
+
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge

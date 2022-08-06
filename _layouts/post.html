@@ -27,7 +27,41 @@ layout: default
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    {{ content }}
+    
+    {%- assign pieces = content | split: '<img src="' -%}
+    {%- for piece in pieces -%}
+      {%- if forloop.first == true -%}
+        {{ piece }}
+      {%- else -%}
+        
+          {%- assign url = piece | split: '" alt="' | first -%}
+          {%- assign alt = piece | split: '" alt="' | shift | join: '" alt="' | split: '"' | first -%}
+          {%- assign rest = piece | split: '" alt="' | shift | join: '" alt="' | split: '"' | shift | join: '"' -%}
+          {%- assign url-filename = url | split: '/' | last -%}
+          {%- assign url-folder = url | split: '/' | pop | join: '/' -%}
+          {%- assign url-extension = url | split: '.' | last -%}
+          {%- if url-extension == "svg" -%}
+            
+            <img  src="{{ url }}" alt={{alt}}{{ rest }}
+          {%- else -%}
+          
+                <img 
+            src="{{ url }}"
+          srcset="{{url-folder}}/img/560/{{ url-filename }} 560w,
+                {{url-folder}}/img/655/{{ url-filename }} 655w,
+                {{url-folder}}/img/874/{{ url-filename }} 874w,
+                {{url-folder}}/img/1024/{{ url-filename }} 1024w,
+                {{url-folder}}/img/1230/{{ url-filename }} 1230w"
+          sizes="82vw,
+                (min-width:500px) 88vw,
+                (min-width:800px) 76vw,
+                (min-width:1000px) 64vw"
+          alt="{{ alt }}"{{ rest }}
+          {%- endif -%}
+       
+      {%- endif -%}
+    {%- endfor -%}
+
   </div>
   <div class="post-tags">
     Tags: 

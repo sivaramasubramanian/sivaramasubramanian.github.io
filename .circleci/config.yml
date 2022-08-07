@@ -2,10 +2,7 @@ version: 2
 jobs:
   deploy:
     docker:
-      - image: cimg/ruby:latest
-        environment:
-          USER_NAME: YOUR GITHUB USERNAME
-          USER_EMAIL: YOUR EMAIL
+      - image: cimg/ruby:3.1.2
     steps:
       - checkout
       - run:

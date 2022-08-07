@@ -29,7 +29,8 @@ jobs:
           command: |
             git config user.name "Sivarama Subramanian"
             git config user.email "sivaraam1024@gmail.com"
-
+            
+            git checkout Gemfile.lock
             git checkout gh-pages
             git pull origin gh-pages
 

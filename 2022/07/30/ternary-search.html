@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Why don’t we use Ternary Search? | Sivaram’s Blog</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Why don’t we use Ternary Search?" />
+<meta name="author" content="Sivarama Subramanian" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Is Ternary search better than binary search? Why is it not popularly used?" />
+<meta property="og:description" content="Is Ternary search better than binary search? Why is it not popularly used?" />
+<link rel="canonical" href="https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html" />
+<meta property="og:url" content="https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html" />
+<meta property="og:site_name" content="Sivaram’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-07-30T05:35:01+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Why don’t we use Ternary Search?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Sivarama Subramanian"},"dateModified":"2022-07-30T05:35:01+00:00","datePublished":"2022-07-30T05:35:01+00:00","description":"Is Ternary search better than binary search? Why is it not popularly used?","headline":"Why don’t we use Ternary Search?","mainEntityOfPage":{"@type":"WebPage","@id":"https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html"},"url":"https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://sivaramasubramanian.github.io/feed.xml" title="Sivaram&apos;s Blog" /><script async defer src="https://www.googletagmanager.com/gtag/js?id=G-4P2CXDSEJN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){window.dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4P2CXDSEJN');
+</script>
+
+
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+<link rel="manifest" href="/site.webmanifest?v=2">
+<link rel="mask-icon" href="/safari-pinned-tab.svg?v=2" color="#5bbad5">
+<link rel="shortcut icon" href="/favicon.ico?v=2">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff"></head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Sivaram&#39;s Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Why don&#39;t we use Ternary Search?</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2022-07-30T05:35:01+00:00" itemprop="datePublished">
+        Jul 30, 2022
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>Before answering the question in the title, let’s see a bit about Binary Search.</p>
+
+<p>Binary Search is one of the most basic algorithms that every programmer learns. The gist of it is simple.
+<!--more-->
+To Search for an element in a sorted array, compare the search key with the middle element.</p>
+<ul>
+  <li>If both are the same, we have found the element.</li>
+  <li>Else if the key is lesser that the middle element, Repeat the search in left subarray.</li>
+  <li>Else repeat the search in right subarray.</li>
+  <li>if there is no such subarray to search then the element does not exist in this array.</li>
+</ul>
+
+<!-- {:refdef: style="text-align: center;"} -->
+<p><img 
+            src="/assets/binary-search-gif.webp"
+          srcset="/assets/img/560/binary-search-gif.webp 560w,
+                /assets/img/655/binary-search-gif.webp 655w,
+                /assets/img/874/binary-search-gif.webp 874w,
+                /assets/img/1024/binary-search-gif.webp 1024w,
+                /assets/img/1230/binary-search-gif.webp 1230w"
+          sizes="82vw,
+                (min-width:500px) 88vw,
+                (min-width:800px) 76vw,
+                (min-width:1000px) 64vw"
+          alt="&quot;Visualization of Binary search&quot;" title="binary search in action" class="centered" />
+<!-- {: refdef} --></p>
+
+<h3 id="why-is-binary-search-efficient">Why is Binary search efficient?</h3>
+<p>The algorithm is simple and with each comparison we are cutting the search space in half.</p>
+
+<p>This quickly adds up; to search an array with a million elements, we will need at most just 20 such comparisons.
+Compare this to the million comparisons we would need if we took the naive approach of checking each and every element till we find the one we are searching for.</p>
+
+<p><img 
+            src="/assets/n-vs-log2n.webp"
+          srcset="/assets/img/560/n-vs-log2n.webp 560w,
+                /assets/img/655/n-vs-log2n.webp 655w,
+                /assets/img/874/n-vs-log2n.webp 874w,
+                /assets/img/1024/n-vs-log2n.webp 1024w,
+                /assets/img/1230/n-vs-log2n.webp 1230w"
+          sizes="82vw,
+                (min-width:500px) 88vw,
+                (min-width:800px) 76vw,
+                (min-width:1000px) 64vw"
+          alt="&quot;n vs log2(n) comparison&quot;" title="Comparing linear and Binary search" /></p>
+
+<h3 id="ternary-search-should-be-better-right">Ternary Search should be better, right?</h3>
+<p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2.</p>
+
+<p>It seems like ternary search should be more efficient than binary search, after all O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
+
+<p><img 
+            src="/assets/log2-vs-log3.webp"
+          srcset="/assets/img/560/log2-vs-log3.webp 560w,
+                /assets/img/655/log2-vs-log3.webp 655w,
+                /assets/img/874/log2-vs-log3.webp 874w,
+                /assets/img/1024/log2-vs-log3.webp 1024w,
+                /assets/img/1230/log2-vs-log3.webp 1230w"
+          sizes="82vw,
+                (min-width:500px) 88vw,
+                (min-width:800px) 76vw,
+                (min-width:1000px) 64vw"
+          alt="&quot;log2(n) vs log3(n) comparison&quot;" title="Comparing log2(n) and log3(n)" /></p>
+
+<p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search we need 2 comparisons: compare with the element at index n/3 and then with element at index 2*n/3.</p>
+
+<p>So in reality the time complexity of Ternary Search is not <strong>log<sub>3</sub>(n)</strong> but <strong>2 * log<sub>3</sub>(n)</strong>.</p>
+
+<p><img 
+            src="/assets/log2-vs-2log3.webp"
+          srcset="/assets/img/560/log2-vs-2log3.webp 560w,
+                /assets/img/655/log2-vs-2log3.webp 655w,
+                /assets/img/874/log2-vs-2log3.webp 874w,
+                /assets/img/1024/log2-vs-2log3.webp 1024w,
+                /assets/img/1230/log2-vs-2log3.webp 1230w"
+          sizes="82vw,
+                (min-width:500px) 88vw,
+                (min-width:800px) 76vw,
+                (min-width:1000px) 64vw"
+          alt="&quot;log2(n) vs 2log3(n) comparison&quot;" title="Comparing log2(n) and 2log3(n)" /></p>
+
+<p>Eventhough, <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real world impact in this case.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Split</th>
+      <th>No. of Comparisons at each level</th>
+      <th>Max Comparisons for searching in n elements (n = 1000)</th>
+      <th>n = 10000</th>
+      <th>n = 100000</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2</td>
+      <td>1</td>
+      <td>10</td>
+      <td>14</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>2</td>
+      <td>13</td>
+      <td>17</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>3</td>
+      <td>15</td>
+      <td>20</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>4</td>
+      <td>18</td>
+      <td>23</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>5</td>
+      <td>20</td>
+      <td>26</td>
+      <td>33</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>6</td>
+      <td>22</td>
+      <td>29</td>
+      <td>36</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>As we can see from the table, Binary Search (Split 2) is better than Ternary Search (Split 3) or any other n-ary splits for searching a single element.</p>
+
+<h2 id="why-is-binary-search-special">Why is binary search special?</h2>
+<p>Because we and our computers are special and can compare only 2 elements at a time, if we could somehow compare three elements in a single operation, then ternary would be optimal.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Ternary_search">Ternary Search</a> is not without its uses, a variation of the three-split search can be used for finding the max or min element in an array if the array has a single highest or lowest element.</p>
+</div>
+  <div class="post-tags">
+    Tags: 
+    
+    
+    <a href="/tags/#tag_why-dont-we">why-dont-we</a>
+    &nbsp;
+    
+    <a href="/tags/#tag_searching">searching</a>
+    
+    
+  </div><div class="share-page">
+    Share this on &rarr;
+    <a href="https://twitter.com/intent/tweet?text=Why don't we use Ternary Search?&url=https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">Twitter</a>
+    <a href="https://facebook.com/sharer.php?u=https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html" rel="nofollow" target="_blank" title="Share on Facebook">Facebook</a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html&title=Why don't we use Ternary Search?&summary=Is Ternary search better than binary search? Why is it not popularly used?&source=https://sivaramasubramanian.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">LinkedIn</a>
+    <a href="https://www.reddit.com/submit?title=Why don't we use Ternary Search?&url=https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html" rel="nofollow" target="_blank" title="Share on Reddit">Reddit</a>
+</div><div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html';
+      this.page.identifier = 'https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html';
+    };
+
+    (function() {
+      var d = document, s = d.createElement('script');
+
+      s.src = 'https://sivaram-blog.disqus.com/embed.js';
+
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript><a class="u-url" href="/2022/07/30/ternary-search.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url" href="/"></data>
+  
+    <div class="wrapper">
+  
+      <div class="footer-col-wrapper">
+        <div class="footer-col">
+          <p class="feed-subscribe">
+            <a href="/feed.xml">
+              <svg class="svg-icon orange">
+                <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+              </svg><span>Subscribe</span>
+            </a>
+          </p>
+          <ul class="contact-list">
+            <li class="p-name">Sivarama Subramanian</li>
+            <li><a class="u-email" href="mailto:sivaraam1024+ghblog@gmail.com">sivaraam1024@gmail.com</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p>Blogging about programming, databases, performance optimization and others stuffs
+</p>
+        </div>
+      </div>
+  
+      <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/sivaramasubramanian" target="_blank" title="sivaramasubramanian"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/sivarama-subramanian" target="_blank" title="sivarama-subramanian"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg></a></li><li><a rel="me" href="https://twitter.com/sivaraam07" target="_blank" title="sivaraam07"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+  
+    </div>
+  
+  </footer></body>
+
+</html>

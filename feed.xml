@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://sivaramasubramanian.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://sivaramasubramanian.github.io/" rel="alternate" type="text/html" /><updated>2022-08-07T13:25:09+00:00</updated><id>https://sivaramasubramanian.github.io/feed.xml</id><title type="html">Sivaram’s Blog</title><subtitle>Blogging about programming, databases, performance optimization and others stuffs
+</subtitle><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><entry><title type="html">Why don’t we use Ternary Search?</title><link href="https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html" rel="alternate" type="text/html" title="Why don’t we use Ternary Search?" /><published>2022-07-30T05:35:01+00:00</published><updated>2022-07-30T05:35:01+00:00</updated><id>https://sivaramasubramanian.github.io/2022/07/30/ternary-search</id><content type="html" xml:base="https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html"><![CDATA[<p>Before answering the question in the title, let’s see a bit about Binary Search.</p>
+
+<p>Binary Search is one of the most basic algorithms that every programmer learns. The gist of it is simple.
+<!--more-->
+To Search for an element in a sorted array, compare the search key with the middle element.</p>
+<ul>
+  <li>If both are the same, we have found the element.</li>
+  <li>Else if the key is lesser that the middle element, Repeat the search in left subarray.</li>
+  <li>Else repeat the search in right subarray.</li>
+  <li>if there is no such subarray to search then the element does not exist in this array.</li>
+</ul>
+
+<!-- {:refdef: style="text-align: center;"} -->
+<p><img src="/assets/binary-search-gif.webp" alt="&quot;Visualization of Binary search&quot;" title="binary search in action" class="centered" />
+<!-- {: refdef} --></p>
+
+<h3 id="why-is-binary-search-efficient">Why is Binary search efficient?</h3>
+<p>The algorithm is simple and with each comparison we are cutting the search space in half.</p>
+
+<p>This quickly adds up; to search an array with a million elements, we will need at most just 20 such comparisons.
+Compare this to the million comparisons we would need if we took the naive approach of checking each and every element till we find the one we are searching for.</p>
+
+<p><img src="/assets/n-vs-log2n.webp" alt="&quot;n vs log2(n) comparison&quot;" title="Comparing linear and Binary search" /></p>
+
+<h3 id="ternary-search-should-be-better-right">Ternary Search should be better, right?</h3>
+<p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2.</p>
+
+<p>It seems like ternary search should be more efficient than binary search, after all O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
+
+<p><img src="/assets/log2-vs-log3.webp" alt="&quot;log2(n) vs log3(n) comparison&quot;" title="Comparing log2(n) and log3(n)" /></p>
+
+<p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search we need 2 comparisons: compare with the element at index n/3 and then with element at index 2*n/3.</p>
+
+<p>So in reality the time complexity of Ternary Search is not <strong>log<sub>3</sub>(n)</strong> but <strong>2 * log<sub>3</sub>(n)</strong>.</p>
+
+<p><img src="/assets/log2-vs-2log3.webp" alt="&quot;log2(n) vs 2log3(n) comparison&quot;" title="Comparing log2(n) and 2log3(n)" /></p>
+
+<p>Eventhough, <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real world impact in this case.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Split</th>
+      <th>No. of Comparisons at each level</th>
+      <th>Max Comparisons for searching in n elements (n = 1000)</th>
+      <th>n = 10000</th>
+      <th>n = 100000</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2</td>
+      <td>1</td>
+      <td>10</td>
+      <td>14</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>2</td>
+      <td>13</td>
+      <td>17</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>3</td>
+      <td>15</td>
+      <td>20</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>4</td>
+      <td>18</td>
+      <td>23</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>5</td>
+      <td>20</td>
+      <td>26</td>
+      <td>33</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>6</td>
+      <td>22</td>
+      <td>29</td>
+      <td>36</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>As we can see from the table, Binary Search (Split 2) is better than Ternary Search (Split 3) or any other n-ary splits for searching a single element.</p>
+
+<h2 id="why-is-binary-search-special">Why is binary search special?</h2>
+<p>Because we and our computers are special and can compare only 2 elements at a time, if we could somehow compare three elements in a single operation, then ternary would be optimal.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Ternary_search">Ternary Search</a> is not without its uses, a variation of the three-split search can be used for finding the max or min element in an array if the array has a single highest or lowest element.</p>]]></content><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><category term="why-dont-we" /><category term="searching" /><summary type="html"><![CDATA[Is Ternary search better than binary search? Why is it not popularly used?]]></summary></entry><entry><title type="html">Hello World!</title><link href="https://sivaramasubramanian.github.io/2022/07/24/hello-world.html" rel="alternate" type="text/html" title="Hello World!" /><published>2022-07-24T11:37:41+00:00</published><updated>2022-07-24T11:37:41+00:00</updated><id>https://sivaramasubramanian.github.io/2022/07/24/hello-world</id><content type="html" xml:base="https://sivaramasubramanian.github.io/2022/07/24/hello-world.html"><![CDATA[<p>Hello World! This is my first blog post.</p>
+
+<p>In this post we’ll just be testing if I have setup the blog properly.
+So if you want to read something more interesting checkout my <a href="/">latest blogs</a> or you can stay with me so I don’t have to test this all alone.</p>
+
+<h3 id="code-snippets">Code Snippets</h3>
+
+<p>Let’s check if code snippets are working properly.</p>
+
+<p>I am a <a href="https://go.dev/blog/gopher">Gopher</a>, I fell in love with <a href="https://go.dev/">Golang</a> at my first job where we used it to build micro-services, I will be rooting for <code class="language-plaintext highlighter-rouge">Go</code> wherever I go, so lets start with that…</p>
+
+<figure class="highlight"><pre><code class="language-golang" data-lang="golang"><span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Hello World!!"</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c">// prints 'Hello World!!' to STDOUT.</span></code></pre></figure>
+
+<p>Go is good for so many things but the Java &amp; JVM ecosystem contains a treasure trove of frameworks and libraries that have been built over the decades. I have extensively used Java in every one of my jobs and I will continue to use it and write about, let’s check that too…</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Hello</span><span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)}{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!!"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// prints 'Hello World!!' to STDOUT.</span></code></pre></figure>
+
+<p>The core purpose of all software applications is to Create, Read, and Modify data in some form or another. It all just boils down to this.</p>
+
+<p>Modern Databases systems do a tremendous job of making these operations efficient. Especially the <a href="https://www.reddit.com/r/PostgreSQL/comments/jhe661/why_postgresql_has_13m_line_of_code/">1.3M LOC behemoth</a> called PostgreSQL, which is super-extensible and allows to add <a href="https://arctype.com/blog/postgresql-hooks/">hooks</a>, extensions and even control <a href="https://wiki.postgresql.org/wiki/Foreign_data_wrappers">how and where the data is stored</a>. 
+As such I have been writing and analyzing SQL queries quite a bit so lets test that too.</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">messages</span><span class="p">(</span><span class="n">id</span> <span class="nb">int</span><span class="p">,</span> <span class="n">message</span> <span class="nb">text</span><span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">messages</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Hello World!!'</span><span class="p">);</span>
+
+<span class="k">SELECT</span> <span class="n">message</span> <span class="k">FROM</span> <span class="n">messages</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="c1">-- prints 'Hello World!!' to STDOUT.</span></code></pre></figure>
+
+<p>Now that we have tested the code snippets, lets try creating a Heading or have we already created <a href="#code-snippets">one</a>?</p>
+
+<p>Did you just click on that link and then scroll back?</p>
+
+<p><img src="/assets/why-would-you-do-that.webp" alt="&quot;Why would you do that?&quot;" title="Why would you do that?" /></p>
+
+<p>Well, that should be enough for now. All I will be needing is code snippets, text, heading, links and images.
+Thanks for testing this with me.</p>]]></content><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><category term="java" /><category term="go" /><category term="postgres" /><summary type="html"><![CDATA[Hello World! This is my first blog post.]]></summary></entry></feed>

@@ -281,9 +281,11 @@ table td { border: 1px solid #e8e8e8; }
 
 .post-content { margin-bottom: 30px; }
 
-.post-content h1, .post-content h2, .post-content h3 { margin-top: 60px; }
+.post-content h1, .post-content h2 { margin-top: 60px; }
 
-.post-content h4, .post-content h5, .post-content h6 { margin-top: 30px; }
+.post-content h3, .post-content h4 { margin-top: 45px; }
+
+.post-content h5, .post-content h6 { margin-top: 30px; }
 
 .post-content h2 { font-size: 1.75rem; }
 
@@ -320,6 +322,8 @@ table td { border: 1px solid #e8e8e8; }
 
 /** Grid helpers */
 @media screen and (min-width: 800px) { .one-half { width: calc(50% - (30px / 2)); } }
+
+.site-header { border-top: 0px; }
 
 img.centered { display: block; margin-left: auto; margin-right: auto; }
 

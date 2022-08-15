@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://sivaramasubramanian.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://sivaramasubramanian.github.io/" rel="alternate" type="text/html" /><updated>2022-08-07T15:09:36+00:00</updated><id>https://sivaramasubramanian.github.io/feed.xml</id><title type="html">Sivaram’s Blog</title><subtitle>Blogging about programming, databases, performance optimization and others stuffs
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://sivaramasubramanian.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://sivaramasubramanian.github.io/" rel="alternate" type="text/html" /><updated>2022-08-15T13:55:42+00:00</updated><id>https://sivaramasubramanian.github.io/feed.xml</id><title type="html">Sivaram’s Blog</title><subtitle>Blogging about programming, databases, performance optimization and others stuffs
 </subtitle><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><entry><title type="html">Why don’t we use Ternary Search?</title><link href="https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html" rel="alternate" type="text/html" title="Why don’t we use Ternary Search?" /><published>2022-07-30T05:35:01+00:00</published><updated>2022-07-30T05:35:01+00:00</updated><id>https://sivaramasubramanian.github.io/2022/07/30/ternary-search</id><content type="html" xml:base="https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html"><![CDATA[<p>Before answering the question in the title, let’s see a bit about Binary Search.</p>
 
 <p>Binary Search is one of the most basic algorithms that every programmer learns. The gist of it is simple.
@@ -12,7 +12,8 @@ To Search for an element in a sorted array, compare the search key with the midd
 </ul>
 
 <!-- {:refdef: style="text-align: center;"} -->
-<p><img src="/assets/binary-search-gif.webp" alt="&quot;Visualization of Binary search&quot;" title="binary search in action" class="centered" />
+
+<p><img src="/" alt="Visualization of Binary search" title="binary search in action" srcset=" /assets/binary-search-gif.webp 400w" />
 <!-- {: refdef} --></p>
 
 <h3 id="why-is-binary-search-efficient">Why is Binary search efficient?</h3>
@@ -21,20 +22,20 @@ To Search for an element in a sorted array, compare the search key with the midd
 <p>This quickly adds up; to search an array with a million elements, we will need at most just 20 such comparisons.
 Compare this to the million comparisons we would need if we took the naive approach of checking each and every element till we find the one we are searching for.</p>
 
-<p><img src="/assets/n-vs-log2n.webp" alt="&quot;n vs log2(n) comparison&quot;" title="Comparing linear and Binary search" /></p>
+<p><img src="/assets/resized/1400/n-vs-log2n.webp" alt="n vs log2(n) comparison" title="Comparing linear and Binary search" srcset="    /assets/resized/480/n-vs-log2n.webp 480w,    /assets/resized/800/n-vs-log2n.webp 800w,    /assets/resized/1400/n-vs-log2n.webp 1400w, /assets/n-vs-log2n.webp 3000w" /></p>
 
 <h3 id="ternary-search-should-be-better-right">Ternary Search should be better, right?</h3>
 <p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2.</p>
 
 <p>It seems like ternary search should be more efficient than binary search, after all O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
 
-<p><img src="/assets/log2-vs-log3.webp" alt="&quot;log2(n) vs log3(n) comparison&quot;" title="Comparing log2(n) and log3(n)" /></p>
+<p><img src="/assets/resized/1400/log2-vs-log3.webp" alt="log2(n) vs log3(n) comparison" title="Comparing log2(n) and log3(n)" srcset="    /assets/resized/480/log2-vs-log3.webp 480w,    /assets/resized/800/log2-vs-log3.webp 800w,    /assets/resized/1400/log2-vs-log3.webp 1400w, /assets/log2-vs-log3.webp 1601w" /></p>
 
 <p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search we need 2 comparisons: compare with the element at index n/3 and then with element at index 2*n/3.</p>
 
 <p>So in reality the time complexity of Ternary Search is not <strong>log<sub>3</sub>(n)</strong> but <strong>2 * log<sub>3</sub>(n)</strong>.</p>
 
-<p><img src="/assets/log2-vs-2log3.webp" alt="&quot;log2(n) vs 2log3(n) comparison&quot;" title="Comparing log2(n) and 2log3(n)" /></p>
+<p><img src="/assets/resized/1400/log2-vs-2log3.webp" alt="log2(n) vs 2log3(n) comparison" title="Comparing log2(n) and 2log3(n)" srcset="    /assets/resized/480/log2-vs-2log3.webp 480w,    /assets/resized/800/log2-vs-2log3.webp 800w,    /assets/resized/1400/log2-vs-2log3.webp 1400w, /assets/log2-vs-2log3.webp 1536w" /></p>
 
 <p>Eventhough, <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real world impact in this case.</p>
 
@@ -142,7 +143,7 @@ As such I have been writing and analyzing SQL queries quite a bit so lets test t
 
 <p>Did you just click on that link and then scroll back?</p>
 
-<p><img src="/assets/why-would-you-do-that.webp" alt="&quot;Why would you do that?&quot;" title="Why would you do that?" /></p>
+<p><img src="/" alt="Why would you do that?" title="Why would you do that?" srcset=" /assets/why-would-you-do-that.webp 480w" /></p>
 
 <p>Well, that should be enough for now. All I will be needing is code snippets, text, heading, links and images.
 Thanks for testing this with me.</p>]]></content><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><category term="java" /><category term="go" /><category term="postgres" /><summary type="html"><![CDATA[Hello World! This is my first blog post.]]></summary></entry></feed>

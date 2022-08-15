@@ -37,3 +37,5 @@ gem "webrick", "~> 1.7"
 gem 'jekyll-sitemap'
 
 gem 'html-proofer'
+
+gem 'jekyll-responsive-image'

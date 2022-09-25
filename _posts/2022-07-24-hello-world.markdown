@@ -2,7 +2,7 @@
 layout: post
 title:  "Hello World!"
 date:   2022-07-24 17:07:41 +0530
-categories: java go postgres
+tags: java go postgres
 ---
 
 Hello World! This is my first blog post.
@@ -55,7 +55,7 @@ Now that we have tested the code snippets, lets try creating a Heading or have w
 
 Did you just click on that link and then scroll back?
 
-!["Why would you do that?"](/assets/why-would-you-do-that.gif "Why would you do that?")
+!["Why would you do that?"](/assets/why-would-you-do-that.webp "Why would you do that?")
 
 
 Well, that should be enough for now. All I will be needing is code snippets, text, heading, links and images.

@@ -122,8 +122,8 @@ Open <code class="language-plaintext highlighter-rouge">src/Makefile.global</cod
     <p>Run <code class="language-plaintext highlighter-rouge">make &amp;&amp; make install</code> to run the build and install the outputs to installation directory (<code class="language-plaintext highlighter-rouge">$HOME/postgres/pg14</code>)</p>
   </li>
   <li>After <code class="language-plaintext highlighter-rouge">make &amp;&amp; make install</code> succeeds, go to installation directory and check if the build has debug symbols
-    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd $HOME/postgres/pg14/bin
-nm -pa ./postgres | grep OSO
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$HOME</span>/postgres/pg14/bin
+nm <span class="nt">-pa</span> ./postgres | <span class="nb">grep </span>OSO
 </code></pre></div>    </div>
     <p><code class="language-plaintext highlighter-rouge">nm</code> is used to list the symbol table names in a binary. For PG14, nm returned around 747 entires.
 If you do not find any symbol table entries, or the entries are low, make sure you disabled optimisation in Makefile. If you missed it, add <code class="language-plaintext highlighter-rouge">-O0</code> in Makefile.global, run <code class="language-plaintext highlighter-rouge">make clean</code> and then repeat <code class="language-plaintext highlighter-rouge">make &amp;&amp; make install</code></p>
@@ -144,7 +144,7 @@ I usually change the postgres port to 5433 so that I can keep running a normal n
 </code></pre></div>    </div>
   </li>
   <li>Now we can start the Database,
-    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$HOME/postgres/pg14/bin/pg_ctl -D $HOME/postgres/pgdata -l logfile start
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$HOME</span>/postgres/pg14/bin/pg_ctl <span class="nt">-D</span> <span class="nv">$HOME</span>/postgres/pgdata <span class="nt">-l</span> logfile start
 </code></pre></div>    </div>
     <p>We should see this output,</p>
     <blockquote>

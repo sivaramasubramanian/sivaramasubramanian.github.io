@@ -55,7 +55,7 @@ Open `src/Makefile.global` file and check CFLAGS and CPPFLAGS variables to see i
 6. Run `make && make install` to run the build and install the outputs to installation directory (`$HOME/postgres/pg14`)
 
 7. After `make && make install` succeeds, go to installation directory and check if the build has debug symbols
-```
+```sh
 cd $HOME/postgres/pg14/bin
 nm -pa ./postgres | grep OSO
 ```
@@ -78,7 +78,7 @@ code $HOME/postgres/pgdata/postgresql.conf
 ```
 
 10. Now we can start the Database,
-```
+```sh
 $HOME/postgres/pg14/bin/pg_ctl -D $HOME/postgres/pgdata -l logfile start
 ```
 We should see this output,

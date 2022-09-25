@@ -15,4 +15,8 @@ Usage:
 {% endfor %}
 {% endcapture %}
 
-<img src="/{{ largest.path }}" alt="{{ alt }}" srcset="{{ srcset | strip_newlines }} /{{ path }} {{ original.width }}w">
+<img 
+src="/{{ largest.path }}"
+alt="{{ alt }}" 
+{% if title %} title="{{ title}}" {% endif %}  
+srcset="{{ srcset | strip_newlines }} /{{ path }} {{ original.width }}w">

@@ -103,7 +103,7 @@ main(){
             convert $file -strip $file
             
             # generate responsive images
-            generate_responsive_images $file
+            # generate_responsive_images $file
             
         else
             echo "$file is a folder, ignoring it and its contents"

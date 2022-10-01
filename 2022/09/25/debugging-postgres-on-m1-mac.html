@@ -10,17 +10,17 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="This post explains how to build Postgres from Source code and debug it using VS Code." />
 <meta property="og:description" content="This post explains how to build Postgres from Source code and debug it using VS Code." />
-<link rel="canonical" href="https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html" />
-<meta property="og:url" content="https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html" />
+<link rel="canonical" href="https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html" />
+<meta property="og:url" content="https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html" />
 <meta property="og:site_name" content="Sivaram’s Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-09-25T05:15:01+00:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Build and Debug Postgres using VS Code on a Mac" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Sivarama Subramanian"},"dateModified":"2022-09-25T05:15:01+00:00","datePublished":"2022-09-25T05:15:01+00:00","description":"This post explains how to build Postgres from Source code and debug it using VS Code.","headline":"Build and Debug Postgres using VS Code on a Mac","mainEntityOfPage":{"@type":"WebPage","@id":"https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html"},"url":"https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Sivarama Subramanian"},"dateModified":"2022-09-25T05:15:01+00:00","datePublished":"2022-09-25T05:15:01+00:00","description":"This post explains how to build Postgres from Source code and debug it using VS Code.","headline":"Build and Debug Postgres using VS Code on a Mac","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html"},"url":"https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://sivaramasubramanian.github.io/feed.xml" title="Sivaram&apos;s Blog" /><script async defer src="https://www.googletagmanager.com/gtag/js?id=G-4P2CXDSEJN"></script>
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://blog.sivaram.co.in/feed.xml" title="Sivaram&apos;s Blog" /><script async defer src="https://www.googletagmanager.com/gtag/js?id=G-4P2CXDSEJN"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){window.dataLayer.push(arguments);}
@@ -247,25 +247,25 @@ Let me know in the comments if you face any issue.</p>
     <ul class="social-media-list">
 
         <li><a rel="me"
-                href="https://twitter.com/intent/tweet?text=Build and Debug Postgres using VS Code on a Mac&url=https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html&via=&related="
+                href="https://twitter.com/intent/tweet?text=Build and Debug Postgres using VS Code on a Mac&url=https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html&via=&related="
                 rel="nofollow" target="_blank"><svg class="svg-icon grey">
                     <use xlink:href="/assets/minima-social-icons.svg#twitter"></use>
                 </svg></a></li>
 
-        <li><a rel="me" href="https://facebook.com/sharer.php?u=https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html" rel="nofollow"
+        <li><a rel="me" href="https://facebook.com/sharer.php?u=https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html" rel="nofollow"
                 target="_blank"><svg class="svg-icon grey">
                     <use xlink:href="/assets/minima-social-icons.svg#facebook"></use>
                 </svg></a></li>
 
 
         <li><a rel="me"
-                href="https://www.linkedin.com/shareArticle?mini=true&url=https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html&title=Build and Debug Postgres using VS Code on a Mac&summary=This post explains how to build Postgres from Source code and debug it using VS Code.&source=https://sivaramasubramanian.github.io"
+                href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html&title=Build and Debug Postgres using VS Code on a Mac&summary=This post explains how to build Postgres from Source code and debug it using VS Code.&source=https://blog.sivaram.co.in"
                 rel="nofollow" target="_blank"><svg class="svg-icon grey">
                     <use xlink:href="/assets/minima-social-icons.svg#linkedin"></use>
                 </svg></a></li>
 
 
-        <li><a rel="me" href="https://www.reddit.com/submit?title=Build and Debug Postgres using VS Code on a Mac&url=https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html"
+        <li><a rel="me" href="https://www.reddit.com/submit?title=Build and Debug Postgres using VS Code on a Mac&url=https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html"
                 rel="nofollow" target="_blank">
                 <svg class="svg-icon grey">
                     <use xlink:href="/assets/minima-social-icons.svg#reddit"></use>
@@ -277,8 +277,8 @@ Let me know in the comments if you face any issue.</p>
 </div><div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
-      this.page.url = 'https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html';
-      this.page.identifier = 'https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html';
+      this.page.url = 'https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html';
+      this.page.identifier = 'https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html';
     };
 
     (function() {

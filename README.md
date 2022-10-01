@@ -1,10 +1,10 @@
 ## About
-This repo contains the source to my blog at [sivaramasubramanian.github.io](https://sivaramasubramanian.github.io)
+This repo contains the source to my blog at [blog.sivaram.co.in](https://blog.sivaram.co.in)
 
 Blog Index:
-1. [Hello World](https://sivaramasubramanian.github.io/2022/07/24/hello-world.html)
-2. [Why don't we use Ternary Search?](https://sivaramasubramanian.github.io/2022/07/30/ternary-search.html)
-3. [Build and Debug Postgres using VS Code on a Mac](https://sivaramasubramanian.github.io/2022/09/25/debugging-postgres-on-m1-mac.html)
+1. [Hello World](https://blog.sivaram.co.in/2022/07/24/hello-world.html)
+2. [Why don't we use Ternary Search?](https://blog.sivaram.co.in/2022/07/30/ternary-search.html)
+3. [Build and Debug Postgres using VS Code on a Mac](https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html)
 
 This uses Jekyll [Minima](https://github.com/jekyll/minima) theme.
 

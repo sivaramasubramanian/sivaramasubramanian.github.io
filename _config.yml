@@ -25,7 +25,7 @@ author:
 description: > # this means to ignore newlines until "show_excerpts:"
   Blogging about programming, databases, performance optimization and others stuffs
 
-url: "https://sivaramasubramanian.github.io" # the base hostname & protocol for your site
+url: "https://blog.sivaram.co.in" # the base hostname & protocol for your site
 
 show_excerpts: true # set to true to show excerpts on the homepage
 

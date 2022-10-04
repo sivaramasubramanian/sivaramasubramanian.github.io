@@ -38,11 +38,11 @@ So Hotspot bypasses this expensive operation and returns a preallocated Exceptio
 
 If we need to optimize the object creation for custom Exceptions, we have to override [fillInStackTrace()](https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html#fillInStackTrace()) method in Throwable class. This method looks at the thread's stack trace and fills it in the exception object. Since this might be expensive, for cases where we don't need stack traces we can override this method and set stack trace to be empty.
 
-Norman Maurer, one of the developers of Netty, has written a blog post analyzing the performance improvement of removing the stack trace - [The hidden cost of instantiating throwables](http://normanmaurer.me/blog/2013/11/09/The-hidden-performance-costs-of-instantiating-Throwables/)
+Norman Maurer, one of the developers of Netty, has written a blog post analyzing the performance improvement of removing the stack trace - [The hidden cost of instantiating throwables](http://normanmaurer.me/blog/2013/11/09/The-hidden-performance-costs-of-instantiating-Throwables/){:data-proofer-ignore="true"}
 
 Even though there are performance benefits to skipping the stack trace when instantiating Exceptions, we must keep in mind that Exceptions are for indicating an error or exceptional occurrence and should not be used for control flow. As such Exceptions may not be as useful without stack traces.
 
 ### References
 1. [Cost of Causing Exceptions - JavaSpecialists](https://www.javaspecialists.eu/archive/Issue187-Cost-of-Causing-Exceptions.html)
-1. [The hidden cost of instantiating throwables - Norman Maurer's Blog](http://normanmaurer.me/blog/2013/11/09/The-hidden-performance-costs-of-instantiating-Throwables/)
+1. [The hidden cost of instantiating throwables - Norman Maurer's Blog](http://normanmaurer.me/blog/2013/11/09/The-hidden-performance-costs-of-instantiating-Throwables/){:data-proofer-ignore="true"}
 1. [Fast Exceptions in RIFE - JavaSpecialists](https://www.javaspecialists.eu/archive/Issue129-Fast-Exceptions-in-RIFE.html)

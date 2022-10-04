@@ -2,7 +2,7 @@
 layout: post
 title:  "The curious case of missing stack traces"
 date:   2022-10-04 10:45:01 +0530
-description: This post explains how to build Postgres from Source code and debug it using VS Code.
+description: This post describes about the issue of missing stack traces in Java programs.
 tags: java
 excerpt_separator: <!--more-->
 ---

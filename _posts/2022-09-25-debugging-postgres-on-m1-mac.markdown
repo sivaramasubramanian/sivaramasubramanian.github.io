@@ -3,7 +3,7 @@ layout: post
 title:  "Build and Debug Postgres using VS Code on a Mac"
 date:   2022-09-25 10:45:01 +0530
 description: This post explains how to build Postgres from Source code and debug it using VS Code.
-tags: postgres
+tags: postgres how-to
 excerpt_separator: <!--more-->
 ---
 In this post, we will see how to build Postgres from the source code and debug it to trace through a simple

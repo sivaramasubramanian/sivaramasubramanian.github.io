@@ -69,11 +69,11 @@
 
 <p>Binary Search is one of the most basic algorithms that every programmer learns. The gist of it is simple.
 <!--more-->
-To Search for an element in a sorted array, compare the search key with the middle element.</p>
+To search for an element in a sorted array, compare the search key with the middle element.</p>
 <ul>
   <li>If both are the same, we have found the element.</li>
-  <li>Else if the key is lesser that the middle element, Repeat the search in left subarray.</li>
-  <li>Else repeat the search in right subarray.</li>
+  <li>Else if the key is lesser than the middle element, Repeat the search in the left subarray.</li>
+  <li>Else repeat the search in the right subarray.</li>
   <li>if there is no such subarray to search then the element does not exist in this array.</li>
 </ul>
 
@@ -83,27 +83,27 @@ To Search for an element in a sorted array, compare the search key with the midd
 <!-- {: refdef} --></p>
 
 <h3 id="why-is-binary-search-efficient">Why is Binary search efficient?</h3>
-<p>The algorithm is simple and with each comparison we are cutting the search space in half.</p>
+<p>The algorithm is simple and with each comparison, we are cutting the search space in half.</p>
 
 <p>This quickly adds up; to search an array with a million elements, we will need at most just 20 such comparisons.
-Compare this to the million comparisons we would need if we took the naive approach of checking each and every element till we find the one we are searching for.</p>
+Compare this to the million comparisons we would need if we took the naive approach of checking each element till we find the one we are searching for.</p>
 
 <p><img src="/assets/resized/1400/n-vs-log2n.webp" alt="n vs log2(n) comparison" title="Comparing linear and Binary search" srcset="    /assets/resized/480/n-vs-log2n.webp 480w,    /assets/resized/800/n-vs-log2n.webp 800w,    /assets/resized/1400/n-vs-log2n.webp 1400w, /assets/n-vs-log2n.webp 3000w" /></p>
 
 <h3 id="ternary-search-should-be-better-right">Ternary Search should be better, right?</h3>
-<p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2.</p>
+<p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2?</p>
 
-<p>It seems like ternary search should be more efficient than binary search, after all O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
+<p>It seems like ternary search should be more efficient than binary search, after all, O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
 
 <p><img src="/assets/resized/1400/log2-vs-log3.webp" alt="log2(n) vs log3(n) comparison" title="Comparing log2(n) and log3(n)" srcset="    /assets/resized/480/log2-vs-log3.webp 480w,    /assets/resized/800/log2-vs-log3.webp 800w,    /assets/resized/1400/log2-vs-log3.webp 1400w, /assets/log2-vs-log3.webp 1601w" /></p>
 
-<p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search we need 2 comparisons: compare with the element at index n/3 and then with element at index 2*n/3.</p>
+<p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search, we need 2 comparisons: compare with the element at index n/3 and then with the element at index 2*n/3.</p>
 
 <p>So in reality the time complexity of Ternary Search is not <strong>log<sub>3</sub>(n)</strong> but <strong>2 * log<sub>3</sub>(n)</strong>.</p>
 
 <p><img src="/assets/resized/1400/log2-vs-2log3.webp" alt="log2(n) vs 2log3(n) comparison" title="Comparing log2(n) and 2log3(n)" srcset="    /assets/resized/480/log2-vs-2log3.webp 480w,    /assets/resized/800/log2-vs-2log3.webp 800w,    /assets/resized/1400/log2-vs-2log3.webp 1400w, /assets/log2-vs-2log3.webp 1536w" /></p>
 
-<p>Eventhough, <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real world impact in this case.</p>
+<p>Even though <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real-world impact in this case.</p>
 
 <table>
   <thead>
@@ -170,13 +170,12 @@ Compare this to the million comparisons we would need if we took the naive appro
 
   </div>
   <div class="post-tags">
-    Tags: 
     
     
-    <a href="/tags/#tag_why-dont-we">why-dont-we</a>
+    <a href="/tags/#tag_why-dont-we">#why-dont-we</a>
     &nbsp;
     
-    <a href="/tags/#tag_searching">searching</a>
+    <a href="/tags/#tag_searching">#searching</a>
     
     
   </div>
@@ -253,7 +252,7 @@ Compare this to the million comparisons we would need if we took the naive appro
           </ul>
         </div>
         <div class="footer-col">
-          <p>Blogging about programming, databases, performance optimization and others stuffs
+          <p>Blogging about programming, databases, performance optimization, and other stuff
 </p>
         </div>
       </div>

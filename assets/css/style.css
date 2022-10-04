@@ -245,6 +245,8 @@ table td { border: 1px solid #e8e8e8; }
 
 .contact-list, .social-media-list, .pagination { list-style: none; margin-left: 0; }
 
+.post-tags { font-weight: bold; }
+
 .footer-col-wrapper, .social-links { font-size: 0.9375rem; color: #828282; }
 
 .footer-col { margin-bottom: 15px; }

@@ -1,5 +1,48 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://blog.sivaram.co.in/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.sivaram.co.in/" rel="alternate" type="text/html" /><updated>2022-10-01T10:38:34+00:00</updated><id>https://blog.sivaram.co.in/feed.xml</id><title type="html">Sivaram’s Blog</title><subtitle>Blogging about programming, databases, performance optimization and others stuffs
-</subtitle><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><entry><title type="html">Build and Debug Postgres using VS Code on a Mac</title><link href="https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html" rel="alternate" type="text/html" title="Build and Debug Postgres using VS Code on a Mac" /><published>2022-09-25T05:15:01+00:00</published><updated>2022-09-25T05:15:01+00:00</updated><id>https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac</id><content type="html" xml:base="https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html"><![CDATA[<p>In this post, we will see how to build Postgres from the source code and debug it to trace through a simple
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://blog.sivaram.co.in/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.sivaram.co.in/" rel="alternate" type="text/html" /><updated>2022-10-04T10:11:18+00:00</updated><id>https://blog.sivaram.co.in/feed.xml</id><title type="html">Sivaram’s Blog</title><subtitle>Blogging about programming, databases, performance optimization, and other stuff
+</subtitle><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><entry><title type="html">The curious case of missing stack traces</title><link href="https://blog.sivaram.co.in/2022/10/04/missing-stack-trace.html" rel="alternate" type="text/html" title="The curious case of missing stack traces" /><published>2022-10-04T05:15:01+00:00</published><updated>2022-10-04T05:15:01+00:00</updated><id>https://blog.sivaram.co.in/2022/10/04/missing-stack-trace</id><content type="html" xml:base="https://blog.sivaram.co.in/2022/10/04/missing-stack-trace.html"><![CDATA[<p>In this post, we will see about a weird issue that I came across with missing Java stack traces, how I overcame it, and the learnings from it.
+<!--more--></p>
+<h3 id="the-issue">The issue</h3>
+<p>A few days back, a co-worker came to me with a strange issue; While debugging an issue using logs, he came across a few logs where Exceptions were printed but there was no stack trace.</p>
+
+<p>So to be clear, the exception messages were there but the stack traces with the call tree, file name, line number, etc were all missing.</p>
+
+<h3 id="debugging">Debugging</h3>
+<p>At first, I thought it must be a cause of erroneous logging, Log4j has many overloaded methods to log messages and it is easy to miss the correct method to log exceptions with the stack trace.</p>
+
+<p>But in this case, we checked the code and it was using the <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/Logger.html#info-org.apache.logging.log4j.Marker-java.lang.Object-java.lang.Throwable-">correct method</a> and passing the exception object as a parameter.</p>
+
+<p>Then I vaguely remembered reading about something similar in a <a href="https://www.javaspecialists.eu/archive/">Java Specialists</a> Newsletter. After a quick Google search, we found this <a href="https://www.javaspecialists.eu/archive/Issue187-Cost-of-Causing-Exceptions.html">article</a> that speaks about this behavior.</p>
+
+<p>To quote from the article,</p>
+<blockquote>
+  <p>After a relatively short while, it began returning the same exception instance, with an empty stack trace. You might have seen empty stack traces in your logs. <strong>This is why they occur. Too many exceptions are happening too closely together and eventually the server HotSpot compiler optimizes the code</strong> to deliver a single instance back to the user.</p>
+</blockquote>
+
+<h3 id="the-fix">The fix</h3>
+<p>Hotspot VM removes the stack trace for performance optimization when too many exceptions occur in a short period. Now that we know this, we need to find a way to get the original trace.</p>
+
+<p>As per JDK 5 <a href="https://www.oracle.com/java/technologies/javase/release-notes-introduction.html#vm">release notes</a>, We can pass the flag <code class="language-plaintext highlighter-rouge">-XX:-OmitStackTraceInFastThrow</code> to the JVM to disable this optimization, but we didn’t have the choice of changing the flag and restarting the JVM.</p>
+
+<p>JVM prints the trace for the first few exceptions, the optimization kicks in only when the exceptions are frequent, so we filtered the logs for the particular machine and sorted the exception logs from old to new, and there it was! the complete trace with the call tree and source line info etc.</p>
+
+<h3 id="learnings">Learnings</h3>
+<p>The issue was fixed, but I became curious about why this optimization was done by Hotspot and how it was done.
+Going back to that article from JavaSpecialists Newsletter, we can understand that creating Throwable objects and filling them with stack traces is expensive, especially when these exceptions occur at a high rate.</p>
+
+<p>So Hotspot bypasses this expensive operation and returns a preallocated Exception object for all the calls, but this optimization is only applicable for ‘known’ exceptions like <code class="language-plaintext highlighter-rouge">NullPointerException</code>, <code class="language-plaintext highlighter-rouge">ArrayIndexOutOfBoundsException</code>, etc.</p>
+
+<p>If we need to optimize the object creation for custom Exceptions, we have to override <a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html#fillInStackTrace()">fillInStackTrace()</a> method in Throwable class. This method looks at the thread’s stack trace and fills it in the exception object. Since this might be expensive, for cases where we don’t need stack traces we can override this method and set stack trace to be empty.</p>
+
+<p>Norman Maurer, one of the developers of Netty, has written a blog post analyzing the performance improvement of removing the stack trace - <a href="http://normanmaurer.me/blog/2013/11/09/The-hidden-performance-costs-of-instantiating-Throwables/" data-proofer-ignore="true">The hidden cost of instantiating throwables</a></p>
+
+<p>Even though there are performance benefits to skipping the stack trace when instantiating Exceptions, we must keep in mind that Exceptions are for indicating an error or exceptional occurrence and should not be used for control flow. As such Exceptions may not be as useful without stack traces.</p>
+
+<h3 id="references">References</h3>
+<ol>
+  <li><a href="https://www.javaspecialists.eu/archive/Issue187-Cost-of-Causing-Exceptions.html">Cost of Causing Exceptions - JavaSpecialists</a></li>
+  <li><a href="http://normanmaurer.me/blog/2013/11/09/The-hidden-performance-costs-of-instantiating-Throwables/" data-proofer-ignore="true">The hidden cost of instantiating throwables - Norman Maurer’s Blog</a></li>
+  <li><a href="https://www.javaspecialists.eu/archive/Issue129-Fast-Exceptions-in-RIFE.html">Fast Exceptions in RIFE - JavaSpecialists</a></li>
+</ol>]]></content><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><category term="java" /><summary type="html"><![CDATA[This post explains how to build Postgres from Source code and debug it using VS Code.]]></summary></entry><entry><title type="html">Build and Debug Postgres using VS Code on a Mac</title><link href="https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html" rel="alternate" type="text/html" title="Build and Debug Postgres using VS Code on a Mac" /><published>2022-09-25T05:15:01+00:00</published><updated>2022-09-25T05:15:01+00:00</updated><id>https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac</id><content type="html" xml:base="https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html"><![CDATA[<p>In this post, we will see how to build Postgres from the source code and debug it to trace through a simple
 query execution using <a href="https://code.visualstudio.com/">Visual Studio Code</a> in a M1 Mac.
 <!--more--></p>
 <h3 id="dependencies">Dependencies</h3>
@@ -164,15 +207,15 @@ Let me know in the comments if you face any issue.</p>
 <ol>
   <li><a href="https://www.postgresql.org/docs/14/install-procedure.html">https://www.postgresql.org/docs/14/install-procedure.html</a></li>
   <li><a href="https://www.postgresql.org/docs/14/functions-info.html#id-1.5.8.32.4.2.2.11.1.1.1">https://www.postgresql.org/docs/14/functions-info.html</a></li>
-</ol>]]></content><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><category term="postgres" /><summary type="html"><![CDATA[This post explains how to build Postgres from Source code and debug it using VS Code.]]></summary></entry><entry><title type="html">Why don’t we use Ternary Search?</title><link href="https://blog.sivaram.co.in/2022/07/30/ternary-search.html" rel="alternate" type="text/html" title="Why don’t we use Ternary Search?" /><published>2022-07-30T05:35:01+00:00</published><updated>2022-07-30T05:35:01+00:00</updated><id>https://blog.sivaram.co.in/2022/07/30/ternary-search</id><content type="html" xml:base="https://blog.sivaram.co.in/2022/07/30/ternary-search.html"><![CDATA[<p>Before answering the question in the title, let’s see a bit about Binary Search.</p>
+</ol>]]></content><author><name>Sivarama Subramanian</name><email>sivaraam1024+ghblog@gmail.com</email></author><category term="postgres" /><category term="how-to" /><summary type="html"><![CDATA[This post explains how to build Postgres from Source code and debug it using VS Code.]]></summary></entry><entry><title type="html">Why don’t we use Ternary Search?</title><link href="https://blog.sivaram.co.in/2022/07/30/ternary-search.html" rel="alternate" type="text/html" title="Why don’t we use Ternary Search?" /><published>2022-07-30T05:35:01+00:00</published><updated>2022-07-30T05:35:01+00:00</updated><id>https://blog.sivaram.co.in/2022/07/30/ternary-search</id><content type="html" xml:base="https://blog.sivaram.co.in/2022/07/30/ternary-search.html"><![CDATA[<p>Before answering the question in the title, let’s see a bit about Binary Search.</p>
 
 <p>Binary Search is one of the most basic algorithms that every programmer learns. The gist of it is simple.
 <!--more-->
-To Search for an element in a sorted array, compare the search key with the middle element.</p>
+To search for an element in a sorted array, compare the search key with the middle element.</p>
 <ul>
   <li>If both are the same, we have found the element.</li>
-  <li>Else if the key is lesser that the middle element, Repeat the search in left subarray.</li>
-  <li>Else repeat the search in right subarray.</li>
+  <li>Else if the key is lesser than the middle element, Repeat the search in the left subarray.</li>
+  <li>Else repeat the search in the right subarray.</li>
   <li>if there is no such subarray to search then the element does not exist in this array.</li>
 </ul>
 
@@ -182,27 +225,27 @@ To Search for an element in a sorted array, compare the search key with the midd
 <!-- {: refdef} --></p>
 
 <h3 id="why-is-binary-search-efficient">Why is Binary search efficient?</h3>
-<p>The algorithm is simple and with each comparison we are cutting the search space in half.</p>
+<p>The algorithm is simple and with each comparison, we are cutting the search space in half.</p>
 
 <p>This quickly adds up; to search an array with a million elements, we will need at most just 20 such comparisons.
-Compare this to the million comparisons we would need if we took the naive approach of checking each and every element till we find the one we are searching for.</p>
+Compare this to the million comparisons we would need if we took the naive approach of checking each element till we find the one we are searching for.</p>
 
 <p><img src="/assets/resized/1400/n-vs-log2n.webp" alt="n vs log2(n) comparison" title="Comparing linear and Binary search" srcset="    /assets/resized/480/n-vs-log2n.webp 480w,    /assets/resized/800/n-vs-log2n.webp 800w,    /assets/resized/1400/n-vs-log2n.webp 1400w, /assets/n-vs-log2n.webp 3000w" /></p>
 
 <h3 id="ternary-search-should-be-better-right">Ternary Search should be better, right?</h3>
-<p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2.</p>
+<p>At each level, Instead of cutting the search space in half (50%) what if we narrowed it down to just (33%) by splitting the array into 3 parts instead of 2?</p>
 
-<p>It seems like ternary search should be more efficient than binary search, after all O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
+<p>It seems like ternary search should be more efficient than binary search, after all, O(log<sub>3</sub> (n)) should be faster than O (log<sub>2</sub> (n)) right?</p>
 
 <p><img src="/assets/resized/1400/log2-vs-log3.webp" alt="log2(n) vs log3(n) comparison" title="Comparing log2(n) and log3(n)" srcset="    /assets/resized/480/log2-vs-log3.webp 480w,    /assets/resized/800/log2-vs-log3.webp 800w,    /assets/resized/1400/log2-vs-log3.webp 1400w, /assets/log2-vs-log3.webp 1601w" /></p>
 
-<p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search we need 2 comparisons: compare with the element at index n/3 and then with element at index 2*n/3.</p>
+<p>But there is a catch, in Binary search we need only one comparison at each level - we just compare the search key with the middle element -  but in Ternary search, we need 2 comparisons: compare with the element at index n/3 and then with the element at index 2*n/3.</p>
 
 <p>So in reality the time complexity of Ternary Search is not <strong>log<sub>3</sub>(n)</strong> but <strong>2 * log<sub>3</sub>(n)</strong>.</p>
 
 <p><img src="/assets/resized/1400/log2-vs-2log3.webp" alt="log2(n) vs 2log3(n) comparison" title="Comparing log2(n) and 2log3(n)" srcset="    /assets/resized/480/log2-vs-2log3.webp 480w,    /assets/resized/800/log2-vs-2log3.webp 800w,    /assets/resized/1400/log2-vs-2log3.webp 1400w, /assets/log2-vs-2log3.webp 1536w" /></p>
 
-<p>Eventhough, <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real world impact in this case.</p>
+<p>Even though <i>2 * log<sub>3</sub>(n)</i> is still <em>O(log<sub>3</sub>(n))</em> as per Big-Oh notation, the constants have a real-world impact in this case.</p>
 
 <table>
   <thead>

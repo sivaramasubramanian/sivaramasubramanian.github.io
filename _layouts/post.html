@@ -30,14 +30,13 @@ layout: default
     {{ content }}
   </div>
   <div class="post-tags">
-    Tags: 
     {% if post %}
       {% assign tags = post.tags %}
     {% else %}
       {% assign tags = page.tags %}
     {% endif %}
     {% for category in tags %}
-    <a href="{{site.baseurl}}/tags/#tag_{{category|slugize}}">{{category}}</a>
+    <a href="{{site.baseurl}}/tags/#tag_{{category|slugize}}">#{{category}}</a>
     {% unless forloop.last %}&nbsp;{% endunless %}
     {% endfor %}
   </div>

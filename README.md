@@ -3,6 +3,7 @@ This repo contains the source to my blog at [blog.sivaram.co.in](https://blog.si
 
 Blog Index:
 1. [Build and Debug Postgres using VS Code on a Mac](https://blog.sivaram.co.in/2022/09/25/debugging-postgres-on-m1-mac.html)
+2. [BRIN index in Postgres](https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html)
 4. [The curious case of missing stack traces](https://blog.sivaram.co.in/2022/10/04/missing-stack-trace)
 2. [Why don't we use Ternary Search?](https://blog.sivaram.co.in/2022/07/30/ternary-search.html)
 1. [Hello World](https://blog.sivaram.co.in/2022/07/24/hello-world.html)

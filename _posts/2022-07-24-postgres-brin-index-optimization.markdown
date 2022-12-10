@@ -66,6 +66,8 @@ After data insertion, the table looks like this,
 
 In this table, I ran SELECT queries with both single values in the WHERE clause and also a range with BETWEEN ... AND in the WHERE clause,
 
+The query execution time (in milliseconds) for the various queries are,
+
 |  Query Type  |  No index |  Btree | BRIN  |
 |-------------------------------------------|---|---|---|
 | Single Row Lookup on strictly increasing int  | 239.246  | 1.291  | 2.629  |

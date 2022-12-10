@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>BRIN index in Postgres | Sivaram’s Blog</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="BRIN index in Postgres" />
+<meta name="author" content="Sivarama Subramanian" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This post explains about BRIN indexes in Postgres with its pros and cons" />
+<meta property="og:description" content="This post explains about BRIN indexes in Postgres with its pros and cons" />
+<link rel="canonical" href="https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html" />
+<meta property="og:url" content="https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html" />
+<meta property="og:site_name" content="Sivaram’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-07-24T11:37:41+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="BRIN index in Postgres" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Sivarama Subramanian"},"dateModified":"2022-07-24T11:37:41+00:00","datePublished":"2022-07-24T11:37:41+00:00","description":"This post explains about BRIN indexes in Postgres with its pros and cons","headline":"BRIN index in Postgres","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html"},"url":"https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://blog.sivaram.co.in/feed.xml" title="Sivaram&apos;s Blog" /><script async defer src="https://www.googletagmanager.com/gtag/js?id=G-4P2CXDSEJN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){window.dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4P2CXDSEJN');
+</script>
+
+
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+<link rel="manifest" href="/site.webmanifest?v=2">
+<link rel="mask-icon" href="/safari-pinned-tab.svg?v=2" color="#5bbad5">
+<link rel="shortcut icon" href="/favicon.ico?v=2">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff"></head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Sivaram&#39;s Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/tools/">Tools</a><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">BRIN index in Postgres</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2022-07-24T11:37:41+00:00" itemprop="datePublished">
+        Jul 24, 2022
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>One of the key features of Postgres is its ability to index data using many different types of indexes, each with its own set of benefits and drawbacks. One type of index that is particularly useful for large tables is the BRIN index. 
+<!--more--></p>
+<h3 id="what-are-brin-indexes">What are BRIN Indexes?</h3>
+<p>BRIN stands for “Block Range INdex”. BRIN indexes work by dividing the table into blocks and storing the minimum and maximum values for each block. This allows Postgres to quickly identify which blocks contain the desired data and only scan those blocks, reducing the overall time and resources required for the query. This also allows the index to be much smaller in size, which makes it more efficient to use.</p>
+
+<h3 id="when-should-we-use-brin-indexes">When should we use BRIN indexes?</h3>
+<p>BRIN indexes are particularly useful for tables that have a large number of rows with a high degree of data correlation within blocks of pages. For example, a BRIN index would be well-suited for a column that contains time-series data, where each value represents a single point in time and the insertion order is correlated to the physical storage order, i.e., there won’t be many overlaps in min and max values between pages.</p>
+
+<h3 id="creating-a-brin-index">Creating a BRIN index</h3>
+<p>To create a BRIN index in Postgres, you can use the CREATE INDEX command. Here is an example of how to create a BRIN index on a table named my_table:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">my_index</span>
+<span class="k">ON</span> <span class="n">my_table</span>
+<span class="k">USING</span> <span class="n">BRIN</span> <span class="p">(</span><span class="n">column1</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="performance-comparison">Performance Comparison</h3>
+<p>To compare the performance between Btree and BRIN indexes, we can create a table and fill it with some random data.</p>
+
+<p>I used the following query to insert 10 million rows, this uses a few UDFs to generate random integers and timestamps.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">brin_test</span> <span class="p">(</span>
+    <span class="k">SELECT</span> <span class="n">i</span> <span class="k">as</span> <span class="n">id</span><span class="p">,</span>
+     <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">1</span><span class="p">.</span><span class="mi">5</span><span class="p">)::</span><span class="nb">int</span> <span class="k">as</span> <span class="n">strict_inc</span><span class="p">,</span>
+    <span class="n">random_int_between</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">)</span> <span class="k">as</span> <span class="n">random</span><span class="p">,</span>
+    <span class="n">random_int_between</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">inc_with_fluctuations</span><span class="p">,</span>
+    <span class="n">random_int_between</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">5000</span><span class="p">)</span> <span class="k">as</span> <span class="n">inc_with_large_flucts</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">'2022-01-01'</span><span class="p">::</span><span class="nb">timestamp</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">interval</span> <span class="s1">'1 second'</span><span class="p">))</span> <span class="k">as</span> <span class="n">strict_inc_time</span><span class="p">,</span>
+    <span class="n">random_time_between</span><span class="p">(</span><span class="s1">'1970-01-01'</span><span class="p">,</span> <span class="s1">'2022-01-01'</span><span class="p">)</span> <span class="k">as</span> <span class="n">random_time</span><span class="p">,</span>
+    <span class="n">random_time_between</span><span class="p">(</span><span class="s1">'2022-01-01'</span><span class="p">::</span><span class="nb">timestamp</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">interval</span> <span class="s1">'1 second'</span><span class="p">),</span> <span class="s1">'2022-01-01'</span><span class="p">::</span><span class="nb">timestamp</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">interval</span> <span class="s1">'1 second'</span> <span class="o">+</span> <span class="n">interval</span> <span class="s1">'10 second'</span><span class="p">))</span> <span class="n">inc_time_with_fluctuations</span><span class="p">,</span>
+    <span class="n">random_time_between</span><span class="p">(</span><span class="s1">'2022-01-01'</span><span class="p">::</span><span class="nb">timestamp</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">interval</span> <span class="s1">'1 second'</span><span class="p">),</span> <span class="s1">'2022-01-01'</span><span class="p">::</span><span class="nb">timestamp</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">interval</span> <span class="s1">'1 second'</span> <span class="o">+</span> <span class="n">interval</span> <span class="s1">'1 month'</span><span class="p">))</span> <span class="n">inc_time_with_large_flucts</span><span class="p">,</span>
+    <span class="k">from</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">)</span> <span class="k">as</span> <span class="n">i</span>
+<span class="p">);</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">strict_inc</code> and <code class="language-plaintext highlighter-rouge">strict_inc_time</code> have strictly increasing values but may contain duplicates.</li>
+  <li><code class="language-plaintext highlighter-rouge">random</code> and <code class="language-plaintext highlighter-rouge">random_time</code> contain fully random values.</li>
+  <li><code class="language-plaintext highlighter-rouge">inc_with_fluctuations</code> and <code class="language-plaintext highlighter-rouge">inc_time_with_fluctuations</code> contain generally increasing values with slight fluctuations.</li>
+  <li><code class="language-plaintext highlighter-rouge">inc_with_large_flucts</code> and <code class="language-plaintext highlighter-rouge">inc_time_with_large_flucts</code> contain generally increasing values with large fluctuations.</li>
+</ul>
+
+<p>After data insertion, the table looks like this,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>strict_inc</th>
+      <th>random</th>
+      <th>inc with_fluctations</th>
+      <th>strict_inc_time                     </th>
+      <th>random_time                     </th>
+      <th>inc_time_with_fluctuations</th>
+      <th>inc with_large_flucts</th>
+      <th>inc_time_with_large_flucts</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>7909441</td>
+      <td>2</td>
+      <td>2022-01-01 00:00:01</td>
+      <td>2017-04-24 21:08:09.98</td>
+      <td>2022-01-01 00:00:10.77</td>
+      <td>3741</td>
+      <td>2022-01-19 23:31:36.72</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>3</td>
+      <td>2654424</td>
+      <td>5</td>
+      <td>2022-01-01 00:00:02</td>
+      <td>2014-10-27 20:32:44.45</td>
+      <td>2022-01-01 00:00:08.86</td>
+      <td>4568</td>
+      <td>2022-01-18 08:14:47.08</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>5</td>
+      <td>1617074</td>
+      <td>4</td>
+      <td>2022-01-01 00:00:03</td>
+      <td>2001-09-28 23:49:05.66</td>
+      <td>2022-01-01 00:00:12.68</td>
+      <td>4847</td>
+      <td>2022-01-22 08:10:27.84</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>6</td>
+      <td>7145184</td>
+      <td>7</td>
+      <td>2022-01-01 00:00:04</td>
+      <td>1973-08-10 17:16:05.11</td>
+      <td>2022-01-01 00:00:11.9</td>
+      <td>3630</td>
+      <td>2022-01-06 07:04:08.76</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>8</td>
+      <td>8897237</td>
+      <td>7</td>
+      <td>2022-01-01 00:00:05</td>
+      <td>2012-12-26 03:56:10.39</td>
+      <td>2022-01-01 00:00:09.65</td>
+      <td>4341</td>
+      <td>2022-01-22 13:38:50.03</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>9</td>
+      <td>1357535</td>
+      <td>9</td>
+      <td>2022-01-01 00:00:06</td>
+      <td>2004-09-10 10:14:19.94</td>
+      <td>2022-01-01 00:00:13.54</td>
+      <td>3571</td>
+      <td>2022-01-01 16:28:10.77</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>11</td>
+      <td>8036526</td>
+      <td>7</td>
+      <td>2022-01-01 00:00:07</td>
+      <td>1976-04-18 13:52:20.69</td>
+      <td>2022-01-01 00:00:11.67</td>
+      <td>2159</td>
+      <td>2022-01-30 05:03:33.79</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>12</td>
+      <td>6248973</td>
+      <td>8</td>
+      <td>2022-01-01 00:00:08</td>
+      <td>1988-03-27 00:46:22.00</td>
+      <td>2022-01-01 00:00:12.15</td>
+      <td>1202</td>
+      <td>2022-01-24 00:41:01.77</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>14</td>
+      <td>2993551</td>
+      <td>10</td>
+      <td>2022-01-01 00:00:09</td>
+      <td>1990-06-07 14:07:25.84</td>
+      <td>2022-01-01 00:00:14.64</td>
+      <td>1120</td>
+      <td>2022-01-12 00:54:51.17</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>15</td>
+      <td>8377196</td>
+      <td>11</td>
+      <td>2022-01-01 00:00:10</td>
+      <td>1983-01-19 04:26:23.50</td>
+      <td>2022-01-01 00:00:19.99</td>
+      <td>323</td>
+      <td>2022-01-09 20:10:27.66</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In this table, I ran SELECT queries with both single values in the WHERE clause and also a range with BETWEEN … AND in the WHERE clause,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Query Type</th>
+      <th>No index</th>
+      <th>Btree</th>
+      <th>BRIN</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Single Row Lookup on strictly increasing int</td>
+      <td>239.246</td>
+      <td>1.291</td>
+      <td>2.629</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on random int</td>
+      <td>229.026</td>
+      <td>2.876</td>
+      <td>2385.987</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on increasing int with fluctuations</td>
+      <td>224.503</td>
+      <td>12.302</td>
+      <td>5.632</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on increasing int with large fluctuations</td>
+      <td>381.571</td>
+      <td>1.684</td>
+      <td>2.542</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on strictly increasing timestamp</td>
+      <td>268.229</td>
+      <td>2.611</td>
+      <td>0.271</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on random timestamp</td>
+      <td>254.684</td>
+      <td>2.582</td>
+      <td>1355.999</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on increasing timestamp with fluctuations</td>
+      <td>286.124</td>
+      <td>3.473</td>
+      <td>0.303</td>
+    </tr>
+    <tr>
+      <td>Single Row Lookup on increasing timestamp with large fluctuations</td>
+      <td>385.281</td>
+      <td>0.133</td>
+      <td>155.888</td>
+    </tr>
+    <tr>
+      <td>Range query on strictly increasing int</td>
+      <td>269.887</td>
+      <td>55.806</td>
+      <td>2.464</td>
+    </tr>
+    <tr>
+      <td>Range query on random int</td>
+      <td>303.607</td>
+      <td>69.201</td>
+      <td>223.032</td>
+    </tr>
+    <tr>
+      <td>Range query on increasing int with fluctuations</td>
+      <td>256.515</td>
+      <td>55.493</td>
+      <td>4.731</td>
+    </tr>
+    <tr>
+      <td>Range query on increasing int with large fluctuations</td>
+      <td>388.501</td>
+      <td>27.386</td>
+      <td>51.219</td>
+    </tr>
+    <tr>
+      <td>Range query on strictly increasing timestamp</td>
+      <td>272.902</td>
+      <td>58.897</td>
+      <td>59.066</td>
+    </tr>
+    <tr>
+      <td>Range query on random timestamp</td>
+      <td>280.474</td>
+      <td>7.231</td>
+      <td>374.964</td>
+    </tr>
+    <tr>
+      <td>Range query on increasing timestamp with fluctuations</td>
+      <td>299.144</td>
+      <td>58.038</td>
+      <td>65.234</td>
+    </tr>
+    <tr>
+      <td>Range query on increasing timestamp with large fluctuations</td>
+      <td>2045.531</td>
+      <td>52.623</td>
+      <td>498.498</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>From the results, we can see,</p>
+<ul>
+  <li>Btree provides consistent performance regardless of data order.</li>
+  <li>BRIN index performs best when the data is strictly increasing or when the data has only slight fluctuations. It is 2x better on single-row queries and up to 25x faster on range queries.</li>
+  <li>BRIN is 500-1000x slower than Btree when data is random.</li>
+  <li>When there are large fluctuations in data, it is up to 10x slower than BTree.</li>
+</ul>
+
+<p>Understandably, BRIN performs worse than Btree on random data and data with large fluctuations, since it cannot use the min-max values to skip blocks entirely in such data sets.</p>
+
+<h3 id="block-size-in-brin-index">Block size in BRIN index</h3>
+<p>When creating a BRIN index, we can provide the number of blocks that must be summarized in a single range.</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">create</span> <span class="k">index</span> <span class="n">brin_test_idx2</span>
+ <span class="k">on</span> <span class="n">brin_test</span>
+<span class="k">using</span> <span class="n">BRIN</span><span class="p">(</span><span class="n">strict_inc</span><span class="p">)</span> <span class="k">with</span> <span class="p">(</span><span class="n">pages_per_range</span> <span class="o">=</span> <span class="mi">16</span><span class="p">);</span>
+</code></pre></div></div>
+<p>This creates a BRIN index which contains a summary entry for every 16 pages.</p>
+
+<p>It’s important to consider the block size. The default block size is typically a good starting point, but you can experiment with different sizes to see which provides the best performance for your specific use case based on fluctuations in your data.</p>
+
+<p>The tradeoff is that with smaller <code class="language-plaintext highlighter-rouge">pages_per_range</code> values, there will be more summary tuples, increasing the index size and the chance of heavy overlap between blocks, making the min-max summary useless, especially if the table is wide. But with larger <code class="language-plaintext highlighter-rouge">pages_per_range</code> values, there will be fewer blocks, but once a matching block is identified, we have to scan through more data to find the exact matches.</p>
+
+<p>In conclusion, BRIN is a powerful index type for specific data patterns where the data ordering closely resembles the physical ordering of the blocks on disk. But in other cases, using normal Btree indexes will be better.</p>
+
+  </div>
+  <div class="post-tags">
+    
+    
+    <a href="/tags/#tag_postgres">#postgres</a>
+    &nbsp;
+    
+    <a href="/tags/#tag_indexing">#indexing</a>
+    &nbsp;
+    
+    <a href="/tags/#tag_brin">#brin</a>
+    
+    
+  </div>
+
+  <hr><div class="share-page">
+    Share this on
+    <ul class="social-media-list">
+
+        <li><a rel="me"
+                href="https://twitter.com/intent/tweet?text=BRIN index in Postgres&url=https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html&via=&related="
+                rel="nofollow" target="_blank"><svg class="svg-icon grey">
+                    <use xlink:href="/assets/minima-social-icons.svg#twitter"></use>
+                </svg></a></li>
+
+        <li><a rel="me" href="https://facebook.com/sharer.php?u=https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html" rel="nofollow"
+                target="_blank"><svg class="svg-icon grey">
+                    <use xlink:href="/assets/minima-social-icons.svg#facebook"></use>
+                </svg></a></li>
+
+
+        <li><a rel="me"
+                href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html&title=BRIN index in Postgres&summary=This post explains about BRIN indexes in Postgres with its pros and cons&source=https://blog.sivaram.co.in"
+                rel="nofollow" target="_blank"><svg class="svg-icon grey">
+                    <use xlink:href="/assets/minima-social-icons.svg#linkedin"></use>
+                </svg></a></li>
+
+
+        <li><a rel="me" href="https://www.reddit.com/submit?title=BRIN index in Postgres&url=https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html"
+                rel="nofollow" target="_blank">
+                <svg class="svg-icon grey">
+                    <use xlink:href="/assets/minima-social-icons.svg#reddit"></use>
+                </svg>
+            </a>
+        </li>
+
+    </ul>
+</div><div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html';
+      this.page.identifier = 'https://blog.sivaram.co.in/2022/07/24/postgres-brin-index-optimization.html';
+    };
+
+    (function() {
+      var d = document, s = d.createElement('script');
+
+      s.src = 'https://sivaram-blog.disqus.com/embed.js';
+
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript><a class="u-url" href="/2022/07/24/postgres-brin-index-optimization.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url" href="/"></data>
+  
+    <div class="wrapper">
+  
+      <div class="footer-col-wrapper">
+        <div class="footer-col">
+          <p class="feed-subscribe">
+            <a href="/feed.xml">
+              <svg class="svg-icon orange">
+                <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+              </svg><span>Subscribe</span>
+            </a>
+          </p>
+          <ul class="contact-list">
+            <li class="p-name">Sivarama Subramanian</li>
+            <li><a class="u-email" href="mailto:sivaraam1024+ghblog@gmail.com">sivaraam1024@gmail.com</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p>Blogging about programming, databases, performance optimization, and other stuff
+</p>
+        </div>
+      </div>
+  
+      <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/sivaramasubramanian" target="_blank" title="sivaramasubramanian"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/sivarama-subramanian" target="_blank" title="sivarama-subramanian"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg></a></li><li><a rel="me" href="https://twitter.com/sivaraam07" target="_blank" title="sivaraam07"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+  
+    </div>
+  
+  </footer></body>
+
+</html>
